@@ -86,9 +86,11 @@ public class WechatPayClient {
      * 商户进件
      */
     public boolean microMerchantSubmit(String json) {
+        try {
         Map<String, String> map = JsonUtils.jsonToMapString(json);
         map.put("version", "3.0");
         map.put("cert_sn", payProperties.getCertSn());
+       // map.put("sign_type", "HMAC-SHA256");
         map.put("id_card_name", RSAEncrypt.rsaEncrypt(map.get("id_card_name"), payProperties.getPemCertPath()));
         map.put("id_card_number", RSAEncrypt.rsaEncrypt(map.get("id_card_number"), payProperties.getPemCertPath()));
         map.put("account_name", RSAEncrypt.rsaEncrypt(map.get("account_name"), payProperties.getPemCertPath()));
@@ -97,7 +99,7 @@ public class WechatPayClient {
         map.put("contact_phone", RSAEncrypt.rsaEncrypt(map.get("contact_phone"), payProperties.getPemCertPath()));
         map.put("contact_email", RSAEncrypt.rsaEncrypt(map.get("contact_email"), payProperties.getPemCertPath()));
 
-        try {
+         // map.put("sign", WechatPayUtil.generateSignature(map, payProperties.getKey()));
             String respXml = WechatPayUtil.requestWithCert(PayUrlConstants.MICRO_MERCHANT_SUBMIT_URL, this.fillRequestData(map), payProperties.getMchId(), payProperties.getCertPath());
             log.info("小微商户进件响应：" + respXml);
             return WechatPayUtil.xmlToMap(respXml).get("return_code").equals("SUCCESS");
